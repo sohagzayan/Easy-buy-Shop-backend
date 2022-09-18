@@ -86,7 +86,6 @@ exports.loginUser = async (req, res, next) => {
   const { password, email } = req.body;
   const user = await User.find({ email: email });
   const isPending = await PendingUser.find({ email: email });
-  console.log(!isPending.length > 0);
 
   if (!isPending.length > 0) {
     if (user && user.length > 0) {
@@ -97,8 +96,7 @@ exports.loginUser = async (req, res, next) => {
           process.env.JWT_SECRET,
           { expiresIn: "1h" }
         );
-        const url = `${process.env.BASE_URL}users/`;
-        await SendEmail(email, "verify Email address", url);
+
         res.status(200).json({
           Access_Token: token,
           userId: user[0]._id,
@@ -111,6 +109,8 @@ exports.loginUser = async (req, res, next) => {
       return next("This User Not Valid");
     }
   } else {
+    const url = `${process.env.BASE_URL}api/user/verifyuser/${user?._id}`;
+    await SendEmail(email, "verify Email address", url);
     next("Pleace Verify Your Account then again try to login");
   }
 };
