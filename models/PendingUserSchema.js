@@ -22,6 +22,23 @@ const PendingUserSchema = mongoose.Schema(
       trim: true,
       unique: [true, "Name must be unique"],
     },
+    bio: {
+      type: String,
+      required: true,
+      trim: true,
+      minLength: [15, "Bio must be at least 15 characters."],
+      maxLength: [70, "bio  is too large"],
+    },
+    personalSite: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+    AccountAccess: {
+      type: String,
+      enum: ["freeUser", "proUser"],
+    },
+    socialAccount: [{ username: String }],
     password: {
       type: String,
       required: true,

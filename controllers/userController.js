@@ -30,10 +30,15 @@ exports.unShiptUser = async (req, res) => {
 exports.createNewUser = async (req, res) => {
   try {
     const hashPassword = await bcrypt.hash(req.body.password, 10);
+    console.log(req.body);
     const newUser = await PendingUser({
       name: req.body.name,
       username: req.body.username,
       email: req.body.email,
+      bio: req.body.bio,
+      personalSite: req.body.personalSite,
+      AccountAccess: req.body.AccountAccess,
+      socialAccount: req.body.socialAccount,
       password: hashPassword,
       role: req.body.role,
       education: req.body.education,
@@ -43,11 +48,12 @@ exports.createNewUser = async (req, res) => {
       image: req.body.image,
     });
     await newUser.save();
-    const url = `${process.env.BASE_URL}api/user/verifyuser/${newUser._id}`;
+    const url = `${process.env.BASE_URL}api/v1/user/signin/${newUser._id}`;
     await SendEmail(newUser.email, "verify Email address", url);
     res.status(200).json({
       status: "success",
       message: "User SignUp Successfully Completed",
+      user: newUser,
     });
   } catch (error) {
     res.status(401).json({ error: error.message });
@@ -65,6 +71,11 @@ exports.verifyUser = async (req, res) => {
       name: userValid[0].name,
       username: userValid[0].username,
       email: userValid[0].email,
+      bio: userValid[0].bio,
+      personalSite: userValid[0].personalSite,
+      socialAccount: userValid[0].socialAccount,
+      AccountAccess: userValid[0].AccountAccess,
+      socialAccount: userValid[0].socialAccount,
       password: userValid[0].password,
       role: userValid[0].role,
       education: userValid[0].education,
@@ -86,7 +97,6 @@ exports.loginUser = async (req, res, next) => {
   const { password, email } = req.body;
   const user = await User.find({ email: email });
   const isPending = await PendingUser.find({ email: email });
-
   if (!isPending.length > 0) {
     if (user && user.length > 0) {
       const isPasswordValid = await bcrypt.compare(password, user[0].password);
@@ -106,6 +116,7 @@ exports.loginUser = async (req, res, next) => {
         next("Authentication filed");
       }
     } else {
+      console.log("i am alse inner");
       return next("This User Not Valid");
     }
   } else {
@@ -128,7 +139,7 @@ exports.currentUser = async (req, res) => {
 
 exports.getAllUser = async (req, res) => {
   try {
-    const allUser = await User.find();
+    const allUser = await User.find().populate();
     res.send(allUser);
   } catch (error) {
     res.send(error);
@@ -150,6 +161,17 @@ exports.getSingleUser = async (req, res) => {
   try {
     const allUser = await User.find({ email: email });
     res.send(allUser);
+  } catch (error) {
+    res.send(error);
+  }
+};
+
+exports.userUpdate = async (req, res) => {
+  const id = req.params.id;
+  console.log(id);
+  try {
+    const updatedUser = await User.findByIdAndUpdate(id, req.body);
+    res.send("Successfully updated user");
   } catch (error) {
     res.send(error);
   }

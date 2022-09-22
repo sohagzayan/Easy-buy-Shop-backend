@@ -14,8 +14,9 @@ const authToken = (req, res, next) => {
     req.decoded = decoded;
     next();
   } catch (err) {
-    console.log(err);
-    return res.status(403).send({ message: "Forbidden access" });
+    console.log(err.message);
+    // return res.status(403).send({ message: "Forbidden access" });
+    next(err.message);
   }
 };
 
