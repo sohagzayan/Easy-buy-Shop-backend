@@ -104,7 +104,7 @@ exports.loginUser = async (req, res, next) => {
         const token = jwt.sign(
           { userEmail: user[0].email, userId: user[0]._id },
           process.env.JWT_SECRET,
-          { expiresIn: "1h" }
+          { expiresIn: "5h" }
         );
 
         res.status(200).json({
@@ -130,7 +130,9 @@ exports.loginUser = async (req, res, next) => {
 exports.currentUser = async (req, res) => {
   const { id } = req.params;
   try {
-    const currentuser = await User.find({ _id: id });
+    const currentuser = await User.find({ _id: id })
+      .populate("card")
+      .populate("bookmark");
     res.status(200).json({ status: "success", currentuser: currentuser });
   } catch (error) {
     res.status(404).json({ error: "User Not Found" });
@@ -139,7 +141,7 @@ exports.currentUser = async (req, res) => {
 
 exports.getAllUser = async (req, res) => {
   try {
-    const allUser = await User.find().populate();
+    const allUser = await User.find().populate("tools").populate("bookmark");
     res.send(allUser);
   } catch (error) {
     res.send(error);
@@ -157,9 +159,9 @@ exports.deleteUser = async (req, res) => {
 };
 
 exports.getSingleUser = async (req, res) => {
-  const email = req.params.email;
+  const { id } = req.params;
   try {
-    const allUser = await User.find({ email: email });
+    const allUser = await User.find({ _id: id });
     res.send(allUser);
   } catch (error) {
     res.send(error);

@@ -73,10 +73,16 @@ const userSchema = mongoose.Schema(
       type: String,
       required: true,
     },
-    tools: [
+    bookmark: [
       {
         type: mongoose.Types.ObjectId,
-        ref: "Tools",
+        ref: "Bookmark",
+      },
+    ],
+    card: [
+      {
+        type: mongoose.Types.ObjectId,
+        ref: "AddToCard",
       },
     ],
   },

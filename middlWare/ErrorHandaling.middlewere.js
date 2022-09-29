@@ -7,8 +7,6 @@ exports.NotFindRouteHandaler = (rew, res, next) => {
 
 /** Global  Error Handler */
 exports.globalErrorHandaler = (err, rew, res, next) => {
-  // res.status(500);
-  console.log("error", err);
   res.status(200).json({
     status: 500,
     message: err,

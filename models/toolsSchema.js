@@ -7,27 +7,55 @@ const toolsSchema = mongoose.Schema({
   },
   details: {
     type: String,
+    required: true,
   },
   price: {
-    type: String,
+    type: Number,
+    default: 0,
+    required: true,
   },
-  quantity: {
-    type: String,
+  InStock: {
+    type: Number,
+    default: 0,
+    required: true,
   },
-  minimumOrder: {
+  availability: {
     type: String,
+    enum: ["in-stock", "out-of-stock"],
+    default: "in-stock",
   },
+  Warranty: {
+    type: String,
+    default: "no",
+  },
+  like: {
+    type: Number,
+    default: 0,
+  },
+  category: {
+    type: String,
+    default: "products",
+  },
+  Brand: {
+    type: String,
+    default: "walton",
+  },
+
   discount: {
-    type: String,
-    default: "0%",
+    type: Number,
+    default: 0,
   },
   coupon: {
     type: String,
-    coupon: "everyone",
+    default: "everyone",
   },
-
   image: {
     type: String,
+    required: true,
+  },
+  users: {
+    type: mongoose.Types.ObjectId,
+    ref: "User",
   },
   date: {
     type: Date,

@@ -16,20 +16,20 @@ exports.addPurchase = async (req, res) => {
 /* get all Parses post */
 
 exports.getAllPurchase = async (req, res) => {
-  const email = req.query.email;
-  const decodedEmail = req.decoded.email
+  const { email } = req.query;
+  const { userEmail } = req.decoded;
 
   if (email) {
-    if(decodedEmail === email){
-        try {
-            const newPurchase = await Purchase.find({ email: email });
-            (newPurchase);
-            res.send(newPurchase);
-          } catch (error) {
-            res.send(error.message);
-          }
-    }else{
-        return res.status(403).send({message : "Forbidden access"})
+    if (userEmail === email) {
+      try {
+        const newPurchase = await Purchase.find({ email: email });
+        newPurchase;
+        res.send(newPurchase);
+      } catch (error) {
+        res.send(error.message);
+      }
+    } else {
+      return res.send({ message: "Forbidden access" });
     }
   } else {
     try {
@@ -41,63 +41,58 @@ exports.getAllPurchase = async (req, res) => {
   }
 };
 
-
-
 exports.getSingleParson = async (req, res) => {
-  const id = req.params.id
+  const id = req.params.id;
+  console.log("come is");
   try {
-    const newPurchase = await Purchase.findById(id)
+    const newPurchase = await Purchase.findById(id);
     res.send(newPurchase);
   } catch (error) {
     res.send(error.message);
   }
 };
 
-
-
-exports.paymentIntent = ('/',  async (req , res)=>{
-  const service = req.body;
+exports.paymentIntent =
+  ("/",
+  async (req, res) => {
+    const service = req.body;
     const price = service.price;
     const amount = price * 100;
     const paymentIntent = await stripe.paymentIntents.create({
-      amount : amount,
-      currency: 'usd',
-      payment_method_types:['card']
+      amount: amount,
+      currency: "usd",
+      payment_method_types: ["card"],
     });
-    res.send({clientSecret: paymentIntent.client_secret})
-})
+    res.send({ clientSecret: paymentIntent.client_secret });
+  });
 
-
-
-exports.updatePayedInfo = ('/',  async (req , res)=>{
-  
-  try {
-    const id = req.params.id
-  const payment = req.body
-  const result = await Payment(payment)
-  await result.save()
-  const updated = await Purchase.findByIdAndUpdate({_id : req.params.id} ,{ $set : {payed : payment.payed , transactionId : payment.transactionId}} , {useFindAndModify : true},(error)=>{
-    if(error){
-      res.status(500).json({
-        error : "there was a server side error"
-      })
-    }else{
-      res.status(200).json({message : 'todo was updated'})
+exports.updatePayedInfo =
+  ("/",
+  async (req, res) => {
+    try {
+      const id = req.params.id;
+      console.log(id);
+      const payment = req.body;
+      const result = await Payment(payment);
+      await result.save();
+      const updated = await Purchase.findByIdAndUpdate(
+        { _id: req.params.id },
+        {
+          $set: { payed: payment.payed, transactionId: payment.transactionId },
+        },
+        { useFindAndModify: true }
+      );
+      res.send(updated);
+    } catch (error) {
+      res.send(error);
     }
-  })
-  res.send(updated)
-  } catch (error) {
-    res.send(error.message)
-  }
-})
+  });
 
-
-
-exports.deletePursesProduct = async(req , res)=>{
+exports.deletePursesProduct = async (req, res) => {
   try {
-     const deleted = await Purchase.findByIdAndDelete(req.params.id)
-     res.status(200).json(deleted)
+    const deleted = await Purchase.findByIdAndDelete(req.params.id);
+    res.status(200).json(deleted);
   } catch (error) {
-      res.send(error)
+    res.send(error);
   }
-}
+};

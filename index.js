@@ -15,6 +15,8 @@ const reviewsRoutes = require("./routes/tools.route");
 const purchaseRoutes = require("./routes/purchase.route");
 const paymetnRoutes = require("./routes/payment.route");
 const adminRoutes = require("./routes/admin.route");
+const bookmarkRoute = require("./routes/bookmarkRoute.route");
+const addToCardRoute = require("./routes/addToCard.route");
 const {
   NotFindRouteHandaler,
   globalErrorHandaler,
@@ -43,6 +45,9 @@ app.use("/api/v1/purchase", purchaseRoutes);
 app.use("/api/v1/payment", paymetnRoutes);
 /** admin  Routes */
 app.use("/api/v1/admin", adminRoutes);
+/** Bookmark  Routes */
+app.use("/api/v1/bookmark", bookmarkRoute);
+app.use("/api/v1/addToCard", addToCardRoute);
 
 /** Not Find Routing */
 app.use(NotFindRouteHandaler);
