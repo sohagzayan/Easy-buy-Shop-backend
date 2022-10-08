@@ -2,7 +2,7 @@
   "name": "exclusive-computer-hardware-fair-server-api",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "server.js",
   "scripts": {
     "build": "grunt build",
     "start": "node server.js",
