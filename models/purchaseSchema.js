@@ -19,9 +19,10 @@ const purchaseSchema = mongoose.Schema({
   totalPrice: {
     type: Number,
   },
-  productId: {
+  productIds: {
     type: mongoose.Types.ObjectId,
   },
+
   orderAmount: {
     type: String,
   },
@@ -37,7 +38,7 @@ const purchaseSchema = mongoose.Schema({
   },
   status: {
     type: String,
-    enum: ["pending", "complete"],
+    enum: ["pending", "shift"],
     default: "pending",
   },
   date: {

@@ -73,6 +73,11 @@ const userSchema = mongoose.Schema(
       type: String,
       required: true,
     },
+    follor: [
+      {
+        type: mongoose.Types.ObjectId,
+      },
+    ],
     bookmark: [
       {
         type: mongoose.Types.ObjectId,
@@ -82,7 +87,16 @@ const userSchema = mongoose.Schema(
     card: [
       {
         type: mongoose.Types.ObjectId,
-        ref: "AddToCard",
+      },
+    ],
+    myProduct: [
+      {
+        type: mongoose.Types.ObjectId,
+      },
+    ],
+    myProductOrder: [
+      {
+        type: mongoose.Types.ObjectId,
       },
     ],
   },

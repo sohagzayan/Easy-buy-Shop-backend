@@ -16,7 +16,7 @@ const AddToCardSchema = mongoose.Schema({
     type: Number,
     default: 0,
   },
-  minimumOrder: {
+  subTotal: {
     type: Number,
     default: 0,
   },
@@ -32,15 +32,11 @@ const AddToCardSchema = mongoose.Schema({
   image: {
     type: String,
   },
-  userId: {
+  users: {
     type: mongoose.Types.ObjectId,
   },
   productId: {
     type: mongoose.Types.ObjectId,
-  },
-  date: {
-    type: Date,
-    default: Date.now,
   },
 });
 

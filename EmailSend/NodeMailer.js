@@ -30,7 +30,6 @@ const SendEmail = async (email, subject, text) => {
         </div>
       `,
     });
-    console.log("Send Email SuccessFully");
   } catch (error) {
     console.log(error);
   }

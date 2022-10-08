@@ -1,13 +1,30 @@
 const Purchase = require("../models/purchaseSchema");
 const Payment = require("../models/paymentDetails");
 const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
-
+const User = require("../models/UserSchema");
 /* Purses add */
-exports.addPurchase = async (req, res) => {
+exports.addPurchase = async (req, res, next) => {
+  const decoded = req.decoded;
   try {
     const newPurchase = await Purchase(req.body);
-    await newPurchase.save();
-    res.send(newPurchase);
+    const newPerchaseProduct = await newPurchase.save();
+    const exits = await User.updateOne(
+      { myProduct: { $in: newPerchaseProduct.productIds } },
+      { $push: { myProductOrder: newPerchaseProduct._id } }
+    );
+
+    res.send({ status: "success", parchesId: newPerchaseProduct._id });
+  } catch (error) {
+    next(error.message);
+  }
+};
+
+exports.UpdatePurchaseInfo = async (req, res) => {
+  const decoded = req.decoded;
+  const { id } = req.params;
+  try {
+    await Purchase.findByIdAndUpdate({ _id: id }, req.body);
+    res.send("Update SuccessFull");
   } catch (error) {
     res.send(error.message);
   }
@@ -17,6 +34,7 @@ exports.addPurchase = async (req, res) => {
 
 exports.getAllPurchase = async (req, res) => {
   const { email } = req.query;
+  const { ProductId } = req.query;
   const { userEmail } = req.decoded;
 
   if (email) {
@@ -41,9 +59,35 @@ exports.getAllPurchase = async (req, res) => {
   }
 };
 
+exports.getAllPurchaseMyProduct = async (req, res) => {
+  const decoded = req.decoded;
+  try {
+    const CurrentUser = await User.findOne({ _id: decoded.userId });
+    const myProductPurchase = await Purchase.find({
+      _id: { $in: CurrentUser.myProductOrder },
+    });
+    res.send(myProductPurchase);
+  } catch (error) {
+    res.send(error.message);
+  }
+};
+
+exports.alredyBuyProduct = async (req, res) => {
+  const { productId } = req.query;
+  const { userEmail } = req.decoded;
+  try {
+    const alredyBuy = await Purchase.find({
+      productId: productId,
+      email: userEmail,
+    });
+    res.send(alredyBuy);
+  } catch (error) {
+    res.send(error.message);
+  }
+};
+
 exports.getSingleParson = async (req, res) => {
   const id = req.params.id;
-  console.log("come is");
   try {
     const newPurchase = await Purchase.findById(id);
     res.send(newPurchase);
@@ -71,7 +115,6 @@ exports.updatePayedInfo =
   async (req, res) => {
     try {
       const id = req.params.id;
-      console.log(id);
       const payment = req.body;
       const result = await Payment(payment);
       await result.save();
@@ -91,7 +134,7 @@ exports.updatePayedInfo =
 exports.deletePursesProduct = async (req, res) => {
   try {
     const deleted = await Purchase.findByIdAndDelete(req.params.id);
-    res.status(200).json(deleted);
+    res.send("Delete Your Order SuccessFully");
   } catch (error) {
     res.send(error);
   }

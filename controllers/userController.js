@@ -30,7 +30,6 @@ exports.unShiptUser = async (req, res) => {
 exports.createNewUser = async (req, res) => {
   try {
     const hashPassword = await bcrypt.hash(req.body.password, 10);
-    console.log(req.body);
     const newUser = await PendingUser({
       name: req.body.name,
       username: req.body.username,
@@ -104,7 +103,7 @@ exports.loginUser = async (req, res, next) => {
         const token = jwt.sign(
           { userEmail: user[0].email, userId: user[0]._id },
           process.env.JWT_SECRET,
-          { expiresIn: "5h" }
+          { expiresIn: "12h" }
         );
 
         res.status(200).json({
@@ -116,7 +115,6 @@ exports.loginUser = async (req, res, next) => {
         next("Authentication filed");
       }
     } else {
-      console.log("i am alse inner");
       return next("This User Not Valid");
     }
   } else {
@@ -129,6 +127,7 @@ exports.loginUser = async (req, res, next) => {
 /** Current User  */
 exports.currentUser = async (req, res) => {
   const { id } = req.params;
+
   try {
     const currentuser = await User.find({ _id: id })
       .populate("card")
@@ -168,12 +167,79 @@ exports.getSingleUser = async (req, res) => {
   }
 };
 
-exports.userUpdate = async (req, res) => {
+exports.userUpdate = async (req, res, next) => {
   const id = req.params.id;
-  console.log(id);
   try {
-    const updatedUser = await User.findByIdAndUpdate(id, req.body);
+    await User.findByIdAndUpdate(id, req.body);
     res.send("Successfully updated user");
+  } catch (error) {
+    next(error.message);
+  }
+};
+
+exports.chnagePassword = async (req, res) => {
+  const decoded = req.decoded;
+  const { oldpassword, newpassword } = req.body;
+  try {
+    const currentUser = await User.findOne({ _id: decoded.userId });
+    const isPassword = await bcrypt.compare(oldpassword, currentUser.password);
+    if (isPassword) {
+      const newPassword = await bcrypt.hash(newpassword, 10);
+      await User.findByIdAndUpdate(
+        { _id: decoded.userId },
+        { password: newPassword }
+      );
+      return res.send("passsword changed SuccessFully Complete");
+    } else {
+      return res.send("Old password don't match");
+    }
+  } catch (error) {
+    res.send(error.message);
+  }
+};
+
+exports.followUser = async (req, res, next) => {
+  const { add, remove, getMyFolloer, removeFollowList } = req.query;
+  const decoded = req.decoded;
+  try {
+    if (getMyFolloer) {
+      const CurrentUser = await User.find({ _id: decoded.userId });
+      const flowerFrofile = await User.find({
+        _id: { $in: CurrentUser[0].follor },
+      });
+      res.send(flowerFrofile);
+      return;
+    } else {
+      if (remove) {
+        await User.findByIdAndUpdate(
+          { _id: remove },
+          { $pull: { follor: decoded.userId } }
+        );
+        res.send("Success unFollowed");
+        return;
+      } else {
+        await User.findByIdAndUpdate(
+          { _id: add },
+          { $push: { follor: decoded.userId } }
+        );
+        res.send("Success to complete like");
+        return;
+      }
+    }
+  } catch (error) {
+    next(error.message);
+  }
+};
+
+exports.followUserRemove = async (req, res) => {
+  const { removeFollowList } = req.query;
+  const decoded = req.decoded;
+  try {
+    await User.findByIdAndUpdate(
+      { _id: decoded.userId },
+      { $pull: { follor: removeFollowList } }
+    );
+    res.send("success to Remove user foller list");
   } catch (error) {
     res.send(error);
   }

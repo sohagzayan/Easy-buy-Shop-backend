@@ -10,9 +10,7 @@ exports.addBookmark = async (req, res, next) => {
       userId: decoded.userId,
       productId: id,
     });
-    console.log(isAdded);
     if (isAdded.length > 0) {
-      console.log("alredy added");
       return res.json({
         status: 500,
         message: "This Products Alredy Add Your Booklist!",
@@ -48,8 +46,20 @@ exports.addBookmark = async (req, res, next) => {
 exports.getBookmark = async (req, res, next) => {
   const decoded = req.decoded;
   try {
-    const allBookmark = await Bookmark.find({ userId: decoded.userId });
+    const allBookmark = await Bookmark.find({
+      userId: decoded.userId,
+    });
     res.send(allBookmark);
+  } catch (error) {
+    res.send(error.message);
+  }
+};
+
+exports.removeBookmark = async (req, res, next) => {
+  const { id } = req.params;
+  try {
+    const allBookmark = await Bookmark.findByIdAndDelete({ _id: id });
+    res.send("bookmark Delete Successs");
   } catch (error) {
     res.send(error.message);
   }

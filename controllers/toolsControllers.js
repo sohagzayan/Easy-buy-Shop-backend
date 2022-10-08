@@ -2,14 +2,18 @@ const Tools = require("../models/toolsSchema");
 const User = require("../models/UserSchema");
 
 /* add tools */
-exports.AddTools = async (req, res) => {
+exports.AddTools = async (req, res, next) => {
   const { userId } = req.decoded;
   try {
     const newTools = await Tools({ ...req.body, users: userId });
-    await newTools.save();
+    const newToolsProduct = await newTools.save();
+    await User.updateOne(
+      { _id: userId },
+      { $push: { myProduct: newToolsProduct._id } }
+    );
     res.send(newTools);
   } catch (error) {
-    res.send(error.message);
+    next(error.message);
   }
 };
 
@@ -43,6 +47,19 @@ exports.getAllTools = async (req, res) => {
   }
 };
 
+exports.getProductSuggested = async (req, res) => {
+  const { category, limit } = req.query;
+  try {
+    const allTools = await Tools.find({ category: category })
+      .populate("users")
+      .limit(limit);
+    res.send(allTools);
+    return;
+  } catch (error) {
+    res.send(error.message);
+  }
+};
+
 exports.getToolsWithoutAuth = async (req, res) => {
   const { limit } = req.query;
   try {
@@ -66,9 +83,10 @@ exports.getAllToolsAmount = async (req, res) => {
 /* get single products use id */
 exports.getSingleProducts = async (req, res) => {
   try {
-    const getSingleProducts = await Tools.findById(req.params.id).populate(
-      "users"
-    );
+    const getSingleProducts = await Tools.findByIdAndUpdate({
+      _id: req.params.id,
+    }).populate("users");
+    // getSingleProducts.
     res.send(getSingleProducts);
   } catch (error) {
     res.send(error.message);
@@ -82,5 +100,16 @@ exports.deleteSingleProducts = async (req, res) => {
     res.send(getSingleProducts);
   } catch (error) {
     res.send(error.message);
+  }
+};
+
+/* Delete Single Tools */
+exports.updateProducts = async (req, res, next) => {
+  const id = req.params.id;
+  try {
+    await Tools.updateOne({ _id: id }, req.body);
+    res.send("SuccessFully Update Product");
+  } catch (error) {
+    next(error.message);
   }
 };

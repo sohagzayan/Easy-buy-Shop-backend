@@ -57,6 +57,10 @@ const toolsSchema = mongoose.Schema({
     type: mongoose.Types.ObjectId,
     ref: "User",
   },
+  view: {
+    type: Number,
+    default: 0,
+  },
   date: {
     type: Date,
     default: Date.now,

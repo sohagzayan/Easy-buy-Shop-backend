@@ -1,28 +1,24 @@
-const mongoose = require('mongoose')
+const mongoose = require("mongoose");
+var moment = require("moment");
 
 const reviewSchema = mongoose.Schema({
-    name : {
-        type : String,
-    },
-    email : {
-        type : String,
-    },
-    rating : {
-        type : String,
-    },
-    dese : {
-        type : String,
-    },
-    image : {
-        type : String,
-    },
-    username : {
-        type : String,
-    },
-    date : {
-        type : Date,
-        default : Date.now
-    }
-})
+  title: {
+    type: String,
+  },
+  rating: {
+    type: Number,
+  },
+  productId: {
+    type: mongoose.Types.ObjectId,
+  },
+  user: {
+    type: mongoose.Types.ObjectId,
+    ref: "User",
+  },
+  date: {
+    type: String,
+    default: moment().format("MMMM Do YYYY, h:mm:ss a"),
+  },
+});
 
-module.exports = mongoose.model("Review" , reviewSchema)
+module.exports = mongoose.model("Review", reviewSchema);

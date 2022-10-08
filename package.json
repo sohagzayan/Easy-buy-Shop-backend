@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "node server.js",
+    "start": "nodemon server.js",
     "start-dev": "nodemon server.js"
   },
   "keywords": [],
@@ -23,6 +23,7 @@
     "multer": "^1.4.4",
     "nodemailer": "^6.7.8",
     "nodemon": "^2.0.19",
+    "react-toastify": "^9.0.8",
     "stripe": "^9.4.0"
   }
 }
