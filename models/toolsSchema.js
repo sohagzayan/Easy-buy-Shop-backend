@@ -4,18 +4,33 @@ const toolsSchema = mongoose.Schema({
   name: {
     type: String,
     required: true,
+    maxLength: [60, "Your Title is so long!"],
   },
   details: {
     type: String,
     required: true,
+    minLength: [
+      30,
+      "Your Product Details is Very Small please minimum add 30 characters",
+    ],
+    maxLength: [
+      100,
+      "Your Product Details is Very Long please maximum add 100 characters",
+    ],
   },
   price: {
     type: Number,
+    max: [
+      1000,
+      "You Can't sell 1000 over price product. You need Pro account!",
+    ],
     default: 0,
     required: true,
   },
   InStock: {
     type: Number,
+    min: [1, "Stock Product minimum 1 needed"],
+    max: [50, "You Can't sell 50 over product. You need Pro account!"],
     default: 0,
     required: true,
   },
@@ -34,11 +49,11 @@ const toolsSchema = mongoose.Schema({
   },
   category: {
     type: String,
-    default: "products",
+    default: "others",
   },
   Brand: {
     type: String,
-    default: "walton",
+    default: "others",
   },
 
   discount: {

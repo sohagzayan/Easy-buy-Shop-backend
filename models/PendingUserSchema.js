@@ -5,15 +5,15 @@ const PendingUserSchema = mongoose.Schema(
       type: String,
       required: true,
       trim: true,
-      minLength: [3, "Name must be at least 3 characters."],
-      maxLength: [15, "Name is too large"],
+      minLength: [5, "Your Name must be at least 5 characters."],
+      maxLength: [20, "Your Name is too large"],
     },
     username: {
       type: String,
       required: true,
       trim: true,
       unique: [true, "Name must be unique"],
-      minLength: [3, "Name must be at least 3 characters."],
+      minLength: [5, "Name must be at least 3 characters."],
       maxLength: [12, "Name is too large"],
     },
     email: {

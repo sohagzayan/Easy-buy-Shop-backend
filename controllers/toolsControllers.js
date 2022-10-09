@@ -96,8 +96,8 @@ exports.getSingleProducts = async (req, res) => {
 /* Delete Single Tools */
 exports.deleteSingleProducts = async (req, res) => {
   try {
-    const getSingleProducts = await Tools.findByIdAndDelete(req.params.id);
-    res.send(getSingleProducts);
+    await Tools.findByIdAndDelete(req.params.id);
+    res.send("Remove Product SuccessFull");
   } catch (error) {
     res.send(error.message);
   }

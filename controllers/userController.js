@@ -27,35 +27,43 @@ exports.unShiptUser = async (req, res) => {
 };
 
 /* Create or Signup a new account Account  */
-exports.createNewUser = async (req, res) => {
+exports.createNewUser = async (req, res, next) => {
   try {
-    const hashPassword = await bcrypt.hash(req.body.password, 10);
-    const newUser = await PendingUser({
-      name: req.body.name,
-      username: req.body.username,
-      email: req.body.email,
-      bio: req.body.bio,
-      personalSite: req.body.personalSite,
-      AccountAccess: req.body.AccountAccess,
-      socialAccount: req.body.socialAccount,
-      password: hashPassword,
-      role: req.body.role,
-      education: req.body.education,
-      country: req.body.country,
-      city: req.body.city,
-      linkeDin: req.body.linkeDin,
-      image: req.body.image,
-    });
-    await newUser.save();
-    const url = `${process.env.BASE_URL}api/v1/user/signin/${newUser._id}`;
-    await SendEmail(newUser.email, "verify Email address", url);
-    res.status(200).json({
-      status: "success",
-      message: "User SignUp Successfully Completed",
-      user: newUser,
-    });
+    const alredyMember = await User.findOne({ email: req.body.email });
+    if (!alredyMember) {
+      const AlredyPendingUser = await PendingUser.findOne({
+        email: req.body.email,
+      });
+      if (!AlredyPendingUser) {
+        const hashPassword = await bcrypt.hash(req.body.password, 10);
+        const newUser = await PendingUser({
+          name: req.body.name,
+          username: req.body.username,
+          email: req.body.email,
+          bio: req.body.bio,
+          personalSite: req.body.personalSite,
+          AccountAccess: req.body.AccountAccess,
+          socialAccount: req.body.socialAccount,
+          password: hashPassword,
+          role: req.body.role,
+          education: req.body.education,
+          country: req.body.country,
+          city: req.body.city,
+          linkeDin: req.body.linkeDin,
+          image: req.body.image,
+        });
+        await newUser.save();
+        const url = `${process.env.BASE_URL}api/v1/user/signin/${newUser._id}`;
+        await SendEmail(newUser.email, "verify Email address", url);
+        res.send("Success To Create Account!");
+      } else {
+        next("Already Send verification Email This Account!");
+      }
+    } else {
+      next("This User Email Already Use!");
+    }
   } catch (error) {
-    res.status(401).json({ error: error.message });
+    next(error.message);
   }
 };
 

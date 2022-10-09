@@ -14,7 +14,6 @@ const toolsRoutes = require("./routes/tools.route");
 const reviewsRoutes = require("./routes/review.route");
 const purchaseRoutes = require("./routes/purchase.route");
 const paymetnRoutes = require("./routes/payment.route");
-const adminRoutes = require("./routes/admin.route");
 const bookmarkRoute = require("./routes/bookmarkRoute.route");
 const addToCardRoute = require("./routes/addToCard.route");
 const addShopReview = require("./routes/add_Shop_review_route");
@@ -44,14 +43,11 @@ app.use("/api/v1/review", reviewsRoutes);
 app.use("/api/v1/purchase", purchaseRoutes);
 /** Payment Routes */
 app.use("/api/v1/payment", paymetnRoutes);
-/** admin  Routes */
-app.use("/api/v1/admin", adminRoutes);
 /** Bookmark  Routes */
 app.use("/api/v1/bookmark", bookmarkRoute);
 app.use("/api/v1/addToCard", addToCardRoute);
 /** Shop Review */
 app.use("/api/v1/shopReview", addShopReview);
-
 /** Not Find Routing */
 app.use(NotFindRouteHandaler);
 /** Global Error Handler */
