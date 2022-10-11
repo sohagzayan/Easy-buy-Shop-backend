@@ -1,19 +1,21 @@
+const { CleanPlugin } = require("webpack");
 const Review = require("../models/reviewSchema");
 
-exports.postReview = async (req, res) => {
+exports.postReview = async (req, res, next) => {
   const decoded = req.decoded;
   try {
     const newPurchase = await Review({ ...req.body, user: decoded.userId });
     await newPurchase.save();
     res.send(newPurchase);
   } catch (error) {
-    res.send(error.message);
+    next(error.message);
   }
 };
 
 exports.getReview = async (req, res) => {
   const { productId, page, size } = req.query;
   const skipTools = parseInt(page) * parseInt(size);
+  // console.log("skip : ", skipTools, "p-id :", productId, "size :", size);
   try {
     const newPurchase = await Review.find({ productId: productId })
       .populate("user")

@@ -5,6 +5,7 @@ exports.addShopReview = async (req, res, next) => {
   try {
     const review = await ShopReview({
       rating: req.body.rating,
+      heading: req.body.heading,
       message: req.body.message,
       user: id,
     });

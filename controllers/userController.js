@@ -126,8 +126,8 @@ exports.loginUser = async (req, res, next) => {
       return next("This User Not Valid");
     }
   } else {
-    const url = `${process.env.BASE_URL}api/user/verifyuser/${user?._id}`;
-    await SendEmail(email, "verify Email address", url);
+    // const url = `${process.env.BASE_URL}api/user/verifyuser/${user?._id}`;
+    // await SendEmail(email, "verify Email address", url);
     next("Pleace Verify Your Account then again try to login");
   }
 };
