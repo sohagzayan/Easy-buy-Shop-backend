@@ -22,28 +22,69 @@ exports.getAllTools = async (req, res) => {
   const { userId } = req.decoded;
   const { size, page, currentUser, limit } = req.query;
   const skipTools = parseInt(page) * parseInt(size);
+  const { category, searchKeyword, priceRange, sortedByPrice } = req.body;
+  let query = {};
+  /** This if condition is bad practice. i'm update this again . this is my sort time solition */
+  if (searchKeyword && category && priceRange) {
+    query = {
+      $text: { $search: searchKeyword },
+      category: category,
+      price: { $lte: priceRange },
+    };
+  } else if (searchKeyword && category) {
+    query = {
+      $text: { $search: searchKeyword },
+      category: category,
+    };
+  } else if (searchKeyword && priceRange) {
+    query = {
+      $text: { $search: searchKeyword },
+      price: { $lte: priceRange },
+    };
+  } else if (priceRange && category) {
+    query = {
+      price: { $lte: priceRange },
+      category: category,
+    };
+  } else if (category) {
+    query = {
+      category: category,
+    };
+  } else if (searchKeyword) {
+    query = {
+      $text: { $search: searchKeyword },
+    };
+  } else if (priceRange) {
+    query = {
+      price: { $lte: priceRange },
+    };
+  }
+
+  // console.log("query", parseInt(sortedByPrice));
+  let Product = [];
   try {
-    if (size || page) {
-      const allTools = await Tools.find()
-        .populate("users")
-        .skip(skipTools)
-        .limit(size);
-      res.send(allTools);
-      return;
-    } else {
-      if (currentUser) {
-        const userTools = await Tools.find({
-          users: currentUser,
-        }).populate("users");
-        res.send(userTools);
-        return;
-      }
-      const allTools = await Tools.find().populate("users").limit(limit);
-      res.send(allTools);
-      return;
-    }
+    const result = await Tools.find(query)
+      .populate("users")
+      .skip(skipTools)
+      .limit(size)
+      .sort({ price: parseInt(sortedByPrice) });
+
+    // console.log(result);
+    res.send(result);
   } catch (error) {
     res.send(error.message);
+  }
+};
+
+exports.getCurrentUserProduct = async (req, res) => {
+  const decoded = req.decoded;
+  try {
+    const CurrentUserData = await Tools.find({
+      users: decoded.userId,
+    }).populate("users");
+    res.send(CurrentUserData);
+  } catch (error) {
+    next(error.message);
   }
 };
 

@@ -18,6 +18,7 @@ const authToken = (req, res, next) => {
         next("Forbidden Access");
       }
     } catch (err) {
+      console.log(err);
       next(err.message);
     }
   } else {
