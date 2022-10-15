@@ -19,7 +19,6 @@ exports.AddTools = async (req, res, next) => {
 
 /* get all tools */
 exports.getAllTools = async (req, res) => {
-  const { userId } = req.decoded;
   const { size, page, currentUser, limit } = req.query;
   const skipTools = parseInt(page) * parseInt(size);
   const { category, searchKeyword, priceRange, sortedByPrice } = req.body;
