@@ -40,15 +40,16 @@ exports.addToCard = async (req, res, next) => {
 };
 
 exports.getCardProducts = async (req, res) => {
-  const decoded = req.decoded;
+  // const decoded = req.decoded;
+  const { id } = req.params;
   try {
-    const CurrentUser = await User.findOne({ _id: decoded.userId });
+    const CurrentUser = await User.findOne({ _id: id });
     const getUserCardProduct = await AddToCardProduct.find({
       _id: { $in: CurrentUser.card },
     });
-    res.send(getUserCardProduct);
+    res.send({ message: "Success", product: getUserCardProduct });
   } catch (error) {
-    res.send(error.message);
+    res.send({ message: error.message, product: [] });
   }
 };
 
