@@ -23,7 +23,7 @@ exports.getAllTools = async (req, res) => {
   const skipTools = parseInt(page) * parseInt(size);
   const { category, searchKeyword, priceRange, sortedByPrice } = req.body;
   let query = {};
-  /** This if condition is bad practice. i'm update this again . this is my sort time solition */
+  /** This if condition is bad practice. i'm update this again  */
   if (searchKeyword && category && priceRange) {
     query = {
       $text: { $search: searchKeyword },
