@@ -24,7 +24,13 @@ const {
 const port = process.env.PORT || 5000;
 
 /* meddleWere */
-app.use(cors());
+const corsOptions = {
+  origin: "https://easy-buy-shop-backend.vercel.app",
+  credentials: true, //access-control-allow-credentials:true
+  optionSuccessStatus: 200,
+};
+app.use(cors(corsOptions));
+
 app.use(express.json());
 
 app.get("/", (req, res) => {
