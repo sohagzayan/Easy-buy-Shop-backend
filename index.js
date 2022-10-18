@@ -2,7 +2,7 @@ const colors = require("colors");
 const connectionDb = require("./connection/connectionDB");
 const dotenv = require("dotenv").config();
 
-const app = require("./index");
+const app = require("./app");
 
 /** Database connection */
 connectionDb();
